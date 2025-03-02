@@ -45,8 +45,7 @@ public class UsersController : ControllerBase
         if (!authorize()) { return "Unauthorized"; }
 
         // encrypt email and password
-        string code = Helper.Encrypt(Helper.Salt + "-" + email + "-" + password);
-        string hash = Helper.Hash(code);
+        string code = Helper.Encrypt(email + "-" + password);
         string url = $"api/users/verify?code=" + code;
         Response.Redirect(url);
 
@@ -56,20 +55,15 @@ public class UsersController : ControllerBase
     [HttpGet("verify")]
     public object verify([FromQuery] string code)
     {
-        string[] parts = Helper.Decrypt(code).Split("-");
-        if (parts.Length != 3)
+        string user = Helper.Decrypt(code);
+        if (user == null)
         {
             return "Invalid code";
         }
 
-        string salt = parts[0];
-        string email = parts[1];
-        string password = parts[2];
-
-        if (salt != Helper.Salt)
-        {
-            return "Invalid code";
-        }
+        string[] parts = user.Split("-");
+        string email = parts[0];
+        string password = parts[1];
 
         dbx.Users.Add(new User { Email = email, Password = Helper.Hash(password) });
         dbx.SaveChanges();

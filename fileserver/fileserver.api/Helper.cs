@@ -41,13 +41,19 @@ namespace fileserver.api
                 tripleDES.Padding = PaddingMode.PKCS7;
                 ICryptoTransform transform = tripleDES.CreateEncryptor();
                 byte[] result = transform.TransformFinalBlock(data, 0, data.Length);
-                return ToHex(result);
+                return ToHex(result) + "-" + Hash(message);
             }
         }
 
         public static string Decrypt(string cipher)
         {
-            byte[] data = Convert.FromHexString(cipher);
+            string[] parts = cipher.Split("-");
+            if (parts.Length != 2)
+            {
+                return null;
+            }
+
+            byte[] data = Convert.FromHexString(parts[0]);
             using (TripleDES tripleDES = TripleDES.Create())
             {
                 tripleDES.Key = Encoding.UTF8.GetBytes(Salt);
@@ -55,7 +61,14 @@ namespace fileserver.api
                 tripleDES.Padding = PaddingMode.PKCS7;
                 ICryptoTransform transform = tripleDES.CreateDecryptor();
                 byte[] result = transform.TransformFinalBlock(data, 0, data.Length);
-                return Encoding.UTF8.GetString(result);
+
+                string message = Encoding.UTF8.GetString(result);
+                if (Hash(message) != parts[1])
+                {
+                    return null;
+                }
+
+                return message;
             }
         }
 
