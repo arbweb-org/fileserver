@@ -16,7 +16,7 @@
     {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/users/get",
+      "launchUrl": "register.html",
       "environmentVariables":
       {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -9,7 +9,8 @@ namespace fileserver.api
     {
         public static string Password { get; set; }
         public static string Salt { get; set; }
-
+        public static byte[] Key { get; set; } 
+        public static string Organization { get; set; }
         public static string MailServer { get; set; }
         public static int MailPort { get; set; }
         public static string MailUser { get; set; }
@@ -36,7 +37,7 @@ namespace fileserver.api
             byte[] data = Encoding.UTF8.GetBytes(message);
             using (TripleDES tripleDES = TripleDES.Create())
             {
-                tripleDES.Key = Encoding.UTF8.GetBytes(Salt);
+                tripleDES.Key = Key;
                 tripleDES.Mode = CipherMode.ECB;
                 tripleDES.Padding = PaddingMode.PKCS7;
                 ICryptoTransform transform = tripleDES.CreateEncryptor();
@@ -47,6 +48,11 @@ namespace fileserver.api
 
         public static string Decrypt(string cipher)
         {
+            if (cipher == null)
+            {
+                return null;
+            }
+
             string[] parts = cipher.Split("-");
             if (parts.Length != 2)
             {
@@ -56,7 +62,7 @@ namespace fileserver.api
             byte[] data = Convert.FromHexString(parts[0]);
             using (TripleDES tripleDES = TripleDES.Create())
             {
-                tripleDES.Key = Encoding.UTF8.GetBytes(Salt);
+                tripleDES.Key = Key;
                 tripleDES.Mode = CipherMode.ECB;
                 tripleDES.Padding = PaddingMode.PKCS7;
                 ICryptoTransform transform = tripleDES.CreateDecryptor();
@@ -74,8 +80,6 @@ namespace fileserver.api
 
         public static void Email(string email, string subject, string message)
         {
-            return;
-
             SmtpClient smtpClient = new SmtpClient(MailServer)
             {
                 Port = MailPort,
@@ -97,22 +101,22 @@ namespace fileserver.api
 
         public static Boolean ValidateToken(string token)
         {
-            if (token != null)
+            string message = Decrypt(token);
+
+            if (message == null)
             {
-                string[] parts = token.Split("-");
-                if (parts.Length == 2)
-                {
-                    long time = long.Parse(parts[0]);
-                    if (
-                        DateTime.FromFileTimeUtc(time).AddHours(1).ToFileTimeUtc() > DateTime.Now.ToFileTimeUtc() &&
-                        parts[1] == Helper.Hash(parts[0]))
-                    {
-                        return true;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            long time = long.Parse(message);
+            var old = DateTime.FromFileTimeUtc(time);
+            var now = DateTime.Now;
+            if (now.ToFileTimeUtc() > old.AddHours(1).ToFileTimeUtc())
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

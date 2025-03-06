@@ -24,7 +24,9 @@ namespace fileserver.api
             // Get Password and Salt from appsettings.json
             Helper.Password = builder.Configuration.GetSection("Password").Value;
             Helper.Salt = builder.Configuration.GetSection("Salt").Value;
-
+            Helper.Key = Convert.FromHexString(builder.Configuration.GetSection("Key").Value);
+            // Organization
+            Helper.Organization = builder.Configuration.GetSection("Organization").Value;
             // Get MailServer, MailPort, MailUser, MailPassword from appsettings.json
             Helper.MailServer = builder.Configuration.GetSection("MailServer").Value;
             Helper.MailPort = int.Parse(builder.Configuration.GetSection("MailPort").Value);

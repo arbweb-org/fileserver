@@ -39,19 +39,26 @@ public class UsersController : ControllerBase
         return "Ok";
     }
 
-    [HttpGet("add")]
-    public object add([FromQuery] string email, [FromQuery] string password)
+    // No Auth
+    [HttpPost("register")]
+    public object register([FromForm] string email, [FromForm] string password)
     {
-        if (!authorize()) { return "Unauthorized"; }
+        // Check if organization is valid
+        if (!email.EndsWith("@" + Helper.Organization))
+        {
+            // return "Invalid email";
+        }
 
-        // encrypt email and password
+        // Encrypt email and password
         string code = Helper.Encrypt(email + "-" + password);
-        string url = $"api/users/verify?code=" + code;
-        Response.Redirect(url);
+        string url = $"https://drive.arbweb.org/api/users/verify?code=" + code;
 
+        // Send verification email
+        Helper.Email(email, "Verify your account", "Please click the link to verify your email: " + url);
         return "Ok";
     }
 
+    // No Auth
     [HttpGet("verify")]
     public object verify([FromQuery] string code)
     {
@@ -67,6 +74,6 @@ public class UsersController : ControllerBase
 
         dbx.Users.Add(new User { Email = email, Password = Helper.Hash(password) });
         dbx.SaveChanges();
-        return "Ok";
+        return "Email verified successfully";
     }
 }
