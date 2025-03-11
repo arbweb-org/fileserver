@@ -2,6 +2,8 @@
 using System.Net;
 using System.Text;
 using System.Security.Cryptography;
+using System;
+using System.Linq;
 
 namespace fileserver.api
 {
@@ -99,24 +101,37 @@ namespace fileserver.api
             smtpClient.Send(mailMessage);
         }
 
-        public static Boolean ValidateToken(string token)
+        // Validate token and return user id, 0 if admin, -1 if invalid or expired
+        public static long ValidateToken(string token)
         {
             string message = Decrypt(token);
 
             if (message == null)
             {
-                return false;
+                return -1;
             }
 
-            long time = long.Parse(message);
+            var parts = message.Split("-");
+            if (parts.Length != 2)
+            {
+                return -1;
+            }
+
+            long time = long.Parse(parts[0]);
             var old = DateTime.FromFileTimeUtc(time);
             var now = DateTime.Now;
             if (now.ToFileTimeUtc() > old.AddHours(1).ToFileTimeUtc())
             {
-                return false;
+                return -1;
             }
 
-            return true;
+            long id;
+            if (!long.TryParse(parts[1], out id))
+            {
+                return -1;
+            }
+
+            return id;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using fileserver.api.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 
 namespace fileserver.api.Controllers;
 
@@ -14,16 +16,23 @@ public class UsersController : ControllerBase
         dbx = dbContext;
     }
 
-    private Boolean authorize()
+    long? _id = null;
+    private long id
     {
-        var session = Request.Cookies["session"];
-        return Helper.ValidateToken(session);
+        get
+        {
+            if (_id != null) { return (long)_id; }
+
+            var session = Request.Cookies["session"];
+            _id = Helper.ValidateToken(session);
+            return (long)_id;
+        }
     }
 
     [HttpGet("get")]
     public object get()
     {
-        if (!authorize()) { return "Unauthorized"; }
+        if (id != 0) { return "Unauthorized"; }
 
         return dbx.Users.ToArray();
     }
@@ -31,7 +40,7 @@ public class UsersController : ControllerBase
     [HttpGet("delete")]
     public object delete([FromQuery] long id)
     {
-        if (!authorize()) { return "Unauthorized"; }
+        if (id != 0) { return "Unauthorized"; }
 
         dbx.Users.Remove(new User { Id = id });
         dbx.SaveChanges();
@@ -40,8 +49,47 @@ public class UsersController : ControllerBase
     }
 
     // No Auth
+    [HttpPost("login")]
+    public object login(
+        [FromForm] string user,
+        [FromForm] string password)
+    {
+        long id = 0;
+        if (user == "admin")
+        {
+            if (password != Helper.Password)
+            {
+                return "Invalid credentials";
+            }
+        }
+        else
+        {
+            User[] users = (from i in dbx.Users
+                            where i.Email == user &&
+                            i.Password == Helper.Hash(password)
+                            select i).ToArray();
+
+            if (users.Any())
+            {
+                id = users[0].Id;
+            }
+            else
+            {
+                return "Invalid credentials";
+            }
+        }
+
+        string time = DateTime.Now.ToFileTimeUtc().ToString();
+        Response.Cookies.Append("session", Helper.Encrypt(time + "-" + id));
+
+        return "Ok";
+    }
+
+    // No Auth
     [HttpPost("register")]
-    public object register([FromForm] string email, [FromForm] string password)
+    public object register( 
+        [FromForm] string email, 
+        [FromForm] string password)
     {
         // Check if organization is valid
         if (!email.EndsWith("@" + Helper.Organization))
@@ -74,6 +122,7 @@ public class UsersController : ControllerBase
 
         dbx.Users.Add(new User { Email = email, Password = Helper.Hash(password) });
         dbx.SaveChanges();
+
         return "Email verified successfully";
     }
 }
