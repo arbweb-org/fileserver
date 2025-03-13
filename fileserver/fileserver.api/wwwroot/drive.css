@@ -81,7 +81,7 @@ body {
 }
 
 .image-icon {
-    color: #fd7e14;
+    color: cadetblue;
 }
 
 .document-icon {
@@ -90,6 +90,10 @@ body {
 
 .spreadsheet-icon {
     color: #198754;
+}
+
+.presentation-icon {
+    color: darkorange;
 }
 
 .pdf-icon {
