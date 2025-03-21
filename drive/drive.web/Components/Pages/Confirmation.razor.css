@@ -1,0 +1,49 @@
+﻿.body-div {
+    background-color: #f8f9fa;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirmation-container {
+    max-width: 500px;
+    width: 100%;
+    padding: 2.5rem;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.icon-container {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.success-icon {
+    color: #198754;
+}
+
+.expired-icon {
+    color: #dc3545;
+}
+
+.confirmation-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.confirmation-message {
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.action-button {
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+}
+
+.status-section {
+    display: none;
+}

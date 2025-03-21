@@ -1,0 +1,17 @@
+﻿@if (loading)
+{
+    <div class="loading">
+        <img src="/img/activity_indicator.gif"/>
+    </div>
+}
+
+@code {
+    private Boolean loading = true;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        loading = false;
+        StateHasChanged();
+        return base.OnAfterRenderAsync(firstRender);
+    }
+}

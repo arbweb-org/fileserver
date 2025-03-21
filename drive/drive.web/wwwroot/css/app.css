@@ -1,0 +1,21 @@
+/* Global styles */
+body {
+    background-color: #f8f9fa;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    opacity: 0.5
+}
+
+    .loading > img {
+        width: 64px;
+        height: 64px
+    }

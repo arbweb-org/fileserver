@@ -1,0 +1,48 @@
+﻿@page "/confirmation"
+
+<div class="body-div">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="confirmation-container">
+                <!-- Success Section -->
+                <div class="status-section" id="success-section">
+                    <div class="icon-container">
+                        <i class="bi bi-check-circle-fill success-icon"></i>
+                    </div>
+                    <h2 class="confirmation-title">Email Confirmed!</h2>
+                    <p class="confirmation-message">
+                        Your email address has been successfully verified. You can now log in to your account with your credentials.
+                    </p>
+                    <a href="#" class="btn btn-primary action-button">Log In Now</a>
+                </div>
+
+                <!-- Expired Section -->
+                <div class="status-section" id="expired-section">
+                    <div class="icon-container">
+                        <i class="bi bi-exclamation-circle-fill expired-icon"></i>
+                    </div>
+                    <h2 class="confirmation-title">Link Expired</h2>
+                    <p class="confirmation-message">
+                        The confirmation link has expired or is invalid. Please request a new confirmation link to verify your email address.
+                    </p>
+                    <button id="resend-button" class="btn btn-outline-primary action-button">Resend Confirmation</button>
+                    <div class="mt-3" id="resend-message" style="display: none;">
+                        <div class="alert alert-success">
+                            A new confirmation email has been sent to your registered email address.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Section -->
+                <div class="status-section" id="loading-section">
+                    <div class="spinner-border text-primary my-4" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="confirmation-message">
+                        Verifying your email address...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
