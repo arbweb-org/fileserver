@@ -61,17 +61,17 @@ namespace drive.web.Components.Pages
 
         bool IsValidInputs()
         {
-            if (!Helper.IsValidEmail(_email))
+            if (!Helper.IsValidEmail(email))
             {
                 Message("Please enter a valid email address");
                 return false;
             }
-            if (!Helper.IsValidPassword(_password))
+            if (!Helper.IsValidPassword(password))
             {
                 Message("Please enter a valid password");
                 return false;
             }
-            if (_password != _confirm)
+            if (password != confirm)
             {
                 Message("Passwords do not match");
                 return false;

@@ -43,7 +43,7 @@ namespace drive.web.Components.Pages
             User user = new User
             {
                 Email = request[2],
-                Password = request[3]
+                Password = Helper.Hash(request[3])
             };
 
             var users = (from u in dbx.Users

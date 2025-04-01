@@ -35,7 +35,7 @@ namespace drive.web.Components.Pages
 
         bool IsValidInputs()
         {
-            if (string.IsNullOrWhiteSpace(_email) || string.IsNullOrWhiteSpace(_password))
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 return false;
             }
@@ -52,7 +52,10 @@ namespace drive.web.Components.Pages
                 return;
             }
 
-            var users = dbx.Users.Where(u => u.Email == _email && u.Password == _password);
+            var users = dbx.Users.Where(u =>
+            u.Email == email &&
+            u.Password == Helper.Hash(password));
+
             if (!users.Any())
             {
                 Message(invalidInputs);

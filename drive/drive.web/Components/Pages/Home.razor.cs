@@ -1,17 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using drive.web.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace drive.web.Components.Pages
 {
-    public partial class Home
+    public partial class Home : PageBase
     {
-        List<string> folders = new();
-        List<string> files = new();
-
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-        }
+        List<Folder> folders = new();
+        List<File> files = new();
 
         string fileStyle(string file)
         {
@@ -36,6 +33,14 @@ namespace drive.web.Components.Pages
                 return "bi-file-earmark-excel-fill spreadsheet-icon";
             }
             return "bi-file-earmark-fill file-icon";
+        }
+
+        protected override async Task Loaded()
+        {
+            folders = await dbx.Folders.ToListAsync();
+            files = await dbx.Files.ToListAsync();
+            isLoaded = true;
+            StateHasChanged();
         }
     }
 }
