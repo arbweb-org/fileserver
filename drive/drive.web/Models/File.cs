@@ -1,4 +1,4 @@
-﻿namespace fileserver.api.Models
+﻿namespace drive.web.Models
 {
     public class File
     {

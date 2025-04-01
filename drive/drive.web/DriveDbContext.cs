@@ -1,8 +1,7 @@
-﻿using fileserver.api.Models;
+﻿using drive.web.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
-namespace fileserver.api
+namespace drive.web
 {
     public class DriveDbContext : DbContext
     {

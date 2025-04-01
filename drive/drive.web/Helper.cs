@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace fileserver.api
+namespace drive.web
 {
     public class SmtpOptions
     {
@@ -25,20 +25,25 @@ namespace fileserver.api
         {
             get
             {
-                return Encoding.UTF8.GetString(_key);
+                return ToHex(_key);
             }
             set
             {
-                _key = Encoding.UTF8.GetBytes(value);
+                _key = FromHex(value);
             }
 
         }
         public static string Organization { get; set; }
         public static SmtpOptions Smtp { get; set; }
 
-        public static string ToHex(byte[] hash)
+        public static string ToHex(byte[] bytes)
         {
-            return Convert.ToHexString(hash).ToLower();
+            return Convert.ToHexString(bytes).ToLower();
+        }
+
+        public static byte[] FromHex(string hex)
+        {
+            return Convert.FromHexString(hex);
         }
 
         public static string Hash(string message)

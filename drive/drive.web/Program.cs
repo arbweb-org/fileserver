@@ -1,11 +1,9 @@
 using drive.web.Components;
-using fileserver.api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
 
 namespace drive.web;
 
@@ -34,6 +32,13 @@ public class Program
         Helper.Smtp = builder.Configuration.GetSection("Smtp").Get<SmtpOptions>() ?? new SmtpOptions();
 
         var app = builder.Build();
+
+        // Auto-migrate DB
+        using (var Scope = app.Services.CreateScope())
+        {
+            var context = Scope.ServiceProvider.GetRequiredService<DriveDbContext>();
+            context.Database.EnsureCreated();
+        }
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

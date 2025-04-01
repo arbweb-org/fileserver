@@ -1,11 +1,29 @@
-﻿using fileserver.api;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace drive.web.Components.Pages
 {
-    public partial class Register
+    public partial class Register : PageBase
     {
+        bool isPasswordReset;
+        [Parameter]
+        public string IsPasswordReset
+        {
+            get
+            {
+                return isPasswordReset ? "password" : "register";
+            }
+            set
+            {
+                if (value == "register") { isPasswordReset = false; }
+                else if (value == "password") { isPasswordReset = true; }
+                else { throw new ArgumentException(); }
+            }
+        }
+
         string _email;
         string email
         {
@@ -13,9 +31,10 @@ namespace drive.web.Components.Pages
             set
             {
                 _email = value;
-                fail = false;
+                Message();
             }
         }
+
         string _password;
         string password
         {
@@ -23,9 +42,10 @@ namespace drive.web.Components.Pages
             set
             {
                 _password = value;
-                fail = false;
+                Message();
             }
         }
+
         string _confirm;
         string confirm
         {
@@ -33,41 +53,78 @@ namespace drive.web.Components.Pages
             set
             {
                 _confirm = value;
-                fail = false;
+                Message();
             }
         }
 
-        string message { get; set; }
+        string verificationUrl = string.Empty;
 
-        Boolean fail { get; set; }
-        Boolean success { get; set; }
-
-        void Message(string text, Boolean ok)
-        {
-            success = ok;
-            fail = !ok;
-            message = text;
-        }
-
-        void Submit()
+        bool IsValidInputs()
         {
             if (!Helper.IsValidEmail(_email))
             {
-                Message("Invalid email", false);
-                return;
+                Message("Please enter a valid email address");
+                return false;
             }
             if (!Helper.IsValidPassword(_password))
             {
-                Message("Invalid password", false);
-                return;
+                Message("Please enter a valid password");
+                return false;
             }
             if (_password != _confirm)
             {
-                Message("Passwords do not match", false);
-                return;
+                Message("Passwords do not match");
+                return false;
             }
+            return true;
+        }
 
-            Message("Registration successful! Please check your email.", true);
+        void SendMail()
+        {
+            // Send verification email
+            Helper.Email(email, "Verify your account", "Please click the link to verify your email: " + verificationUrl);
+        }
+
+        async Task Submit()
+        {
+            string[] request =
+                {
+                    DateTime.Now.ToFileTimeUtc().ToString(),
+                    isPasswordReset ? "1" : "0",
+                    email,
+                    password
+                };
+
+            string json = JsonSerializer.Serialize(request);
+            string token = Helper.Encrypt(json);
+            verificationUrl = $"https://drive.arbweb.org/user/verify/" + token;
+
+            SendMail();
+            string text = isPasswordReset ?
+                "Password update request sent." :
+                "Account registration request sent.";
+
+            Message(text, true);
+            await JSRuntime.InvokeVoidAsync("MailSent");
+        }
+
+        async Task RegisterClicked()
+        {
+            if (!await SetBusy(true)) { return; }
+
+            if (IsValidInputs()) { await Submit(); }
+
+            await SetBusy(false);
+        }
+
+        async Task ResendClicked()
+        {
+            if (!await SetBusy(true)) { return; }
+
+            SendMail();
+            await JSRuntime.InvokeVoidAsync("MailSent");
+
+            await SetBusy(false);
         }
     }
 }

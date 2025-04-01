@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inherits PageBase
 
 <div class="body-div">
     <div class="row justify-content-center">
@@ -9,18 +10,18 @@
                     <p class="text-muted">Enter your credentials to access your account</p>
                 </div>
 
-                <div class="alert alert-danger" id="error-message" role="alert">
-                    Invalid username or password. Please try again.
+                <div style="@(VisibleIf(fail))" class="alert alert-danger" id="error-message" role="alert">
+                    @(message)
                 </div>
 
                 <form id="login-form">
                     <div class="form-floating">
-                        <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                        <input @bind-value="email" @bind-value:event="oninput" type="email" class="form-control" id="email" placeholder="name@example.com" required>
                         <label for="email">Email address</label>
                     </div>
 
                     <div class="form-floating">
-                        <input type="password" class="form-control" id="password" placeholder="Password" required>
+                        <input @bind-value="password" @bind-value:event="oninput" type="password" class="form-control" id="password" placeholder="Password" required>
                         <label for="password">Password</label>
                     </div>
 
@@ -32,14 +33,14 @@
                             </label>
                         </div>
                         <div>
-                            <a href="#" class="text-decoration-none">Forgot password?</a>
+                            <a href="/user/password" class="text-decoration-none">Forgot password?</a>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary submit-btn">Log In</button>
+                    <button type="button" @onclick="LoginClicked" class="btn btn-primary submit-btn">Log In</button>
 
                     <div class="register-link">
-                        <p>Don't have an account? <a href="/register" class="text-decoration-none">Register here</a></p>
+                        <p>Don't have an account? <a href="/user/register" class="text-decoration-none">Register here</a></p>
                     </div>
                 </form>
             </div>

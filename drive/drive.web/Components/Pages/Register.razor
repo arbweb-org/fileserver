@@ -1,27 +1,20 @@
-﻿@page "/register"
-
-<Loading></Loading>
+﻿@page "/user/{IsPasswordReset}"
+@inherits PageBase
 
 <div class="body-div">
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="register-container">
                 <div class="register-header">
-                    <h2>Create Account</h2>
-                    <p class="text-muted">Sign up to get started</p>
+                    <h2>@(isPasswordReset ? "Reset Password" : "Create Account")</h2>
+                    <p class="text-muted">@(isPasswordReset ? "Create a new password" : "Sign up to get started")</p>
                 </div>
 
-                @if(fail)
-                {
-                    <div class="alert alert-danger" id="error-message" role="alert">@(message)</div>
-                }
+                <div style="@VisibleIf(fail)" class="alert alert-danger" id="error-message" role="alert">@(message)</div>
 
-                @if (success)
-                {
-                    <div class="alert alert-success" id="success-message" role="alert">@(message)</div>
-                }
+                <div style="@VisibleIf(success)" class="alert alert-success" id="success-message" role="alert">@(message)</div>
 
-                <form id="register-form">
+                <form style="@VisibleIf(!success)" id="register-form">
                     <div class="form-floating">
                         <input @bind-value="email" @bind-value:event="oninput" type="email" class="form-control" id="email" placeholder="name@example.com" required>
                         <label for="email">Email address</label>
@@ -29,7 +22,7 @@
 
                     <div class="form-floating">
                         <input @bind-value="password" @bind-value:event="oninput" type="password" class="form-control" id="password" placeholder="Password" required minlength="8">
-                        <label for="password">Password</label>
+                        <label for="password">@(isPasswordReset ? "New ": "")Password</label>
                     </div>
 
                     <div class="form-floating">
@@ -41,21 +34,21 @@
                         <p>Password must be 8-16 characters long and include a combination of letters, numbers, and one of these special characters.</p>
                     </div>
 
-                    <button type="button" @onclick="Submit" class="btn btn-primary submit-btn">Register</button>
+                    <button type="button" @onclick="RegisterClicked" class="btn btn-primary submit-btn">@(isPasswordReset ? "Reset password" : "Register")</button>
 
-                    <div class="login-link">
+                    <div style="@VisibleIf(!isPasswordReset)" class="login-link">
                         <p>Already have an account? <a href="/" class="text-decoration-none">Login here</a></p>
                     </div>
                 </form>
 
-                <div class="confirmation-section" id="confirmation-section">
-                    <p>We've sent a confirmation email to <span id="registered-email"></span>.</p>
+                <div style="@VisibleIf(success)" class="confirmation-section" id="confirmation-section">
+                    <p>We've sent a confirmation email to @(email).</p>
                     <p>Please check your inbox and follow the link to verify your account.</p>
                     <p>
                         Didn't receive the email? <br>
-                        <button id="resend-button" class="btn btn-outline-primary mt-2">Resend Confirmation</button>
+                        <button @onclick="ResendClicked" id="resend-button" class="btn btn-outline-primary mt-2">Resend Confirmation</button>
                     </p>
-                    <p id="cooldown-notice" style="display:none;">
+                    <p id="cooldown-notice">
                         You can request another email in <span id="resend-timer">60</span> seconds.
                     </p>
                 </div>

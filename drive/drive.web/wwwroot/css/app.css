@@ -3,7 +3,7 @@ body {
     background-color: #f8f9fa;
 }
 
-.loading {
+#spinner {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -15,7 +15,7 @@ body {
     opacity: 0.5
 }
 
-    .loading > img {
+    #spinner > img {
         width: 64px;
         height: 64px
     }
