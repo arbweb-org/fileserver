@@ -2,7 +2,7 @@
 using Microsoft.JSInterop;
 using System.Threading.Tasks;
 
-namespace drive.web.Components.Pages
+namespace drive.web.Components
 {
     public class PageBase : ComponentBase
     {

@@ -10,7 +10,12 @@ namespace drive.web.Components.Pages
         List<Folder> folders = new();
         List<File> files = new();
 
-        string fileStyle(string file)
+        public Home(DriveDbContext dbContext)
+        {
+            dbx = dbContext;
+        }
+
+        string FileStyle(string file)
         {
             if (file.EndsWith(".jpg") || file.EndsWith(".jpeg") || file.EndsWith(".png") || file.EndsWith(".gif"))
             {
