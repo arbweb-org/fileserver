@@ -1,0 +1,11 @@
+﻿@if (IsVisible)
+{
+    <div id="spinner">
+        <img src="/img/activity_indicator.gif" />
+    </div>
+}
+
+@code{
+    [Parameter]
+    public bool IsVisible { get; set; } = false;
+}
